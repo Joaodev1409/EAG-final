@@ -55,24 +55,62 @@ export default function AdminApp({ tab }) {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [live, setLive] = useState(false);
+  const [offline, setOffline] = useState(() => typeof navigator !== 'undefined' && navigator.onLine === false);
+  const hadLive = useRef(false);
   const listeners = useRef(new Set());
 
   const logout = useCallback(() => { writeSession('eag-admin-token', ''); setToken(''); setUser(null); }, []);
 
+  useEffect(() => {
+    const onOnline = () => setOffline(false);
+    const onOffline = () => setOffline(true);
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+    return () => {
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('offline', onOffline);
+    };
+  }, []);
+
   // Chamada autenticada: sessão expirada leva de volta ao login.
   const call = useCallback(async (path, options = {}) => {
-    try { return await request(path, { ...options, token }); }
-    catch (error) { if (error.status === 401) logout(); throw error; }
+    try {
+      const data = await request(path, { ...options, token });
+      setOffline(false);
+      return data;
+    } catch (error) {
+      if (error.status === 401) logout();
+      if (!error.status || error.code === 'NETWORK') setOffline(true);
+      throw error;
+    }
   }, [token, logout]);
 
   useEffect(() => {
     if (!token) return;
-    request('/me', { token }).then(setUser).catch((error) => { if (error.status === 401) logout(); });
+    request('/me', { token })
+      .then((data) => { setUser(data); setOffline(false); })
+      .catch((error) => {
+        if (error.status === 401) logout();
+        else if (!error.status || error.code === 'NETWORK') setOffline(true);
+      });
   }, [token, logout]);
 
   useEffect(() => {
     if (!token || !user) return undefined;
-    return subscribe('/admin/events', { token, onStatus: setLive, onChange: (event) => listeners.current.forEach((fn) => fn(event)) });
+    hadLive.current = false;
+    return subscribe('/admin/events', {
+      token,
+      onStatus: (status) => {
+        setLive(status);
+        if (status) {
+          hadLive.current = true;
+          setOffline(false);
+        } else if (hadLive.current || (typeof navigator !== 'undefined' && navigator.onLine === false)) {
+          setOffline(true);
+        }
+      },
+      onChange: (event) => listeners.current.forEach((fn) => fn(event))
+    });
   }, [token, user]);
 
   // Sem tempo real (ou conexão caída): atualização periódica das telas abertas.
@@ -84,7 +122,7 @@ export default function AdminApp({ tab }) {
 
   const onEvent = useCallback((fn) => { listeners.current.add(fn); return () => listeners.current.delete(fn); }, []);
   const can = useCallback((permission) => Boolean(user?.permissions?.includes(permission)), [user]);
-  const context = useMemo(() => ({ token, user, call, can, onEvent, live }), [token, user, call, can, onEvent, live]);
+  const context = useMemo(() => ({ token, user, call, can, onEvent, live, offline }), [token, user, call, can, onEvent, live, offline]);
   const allowed = TABS.filter((item) => can(item.permission));
   const active = allowed.find((item) => item.id === tab) || allowed[0];
   // Endereço sem aba (ou aba sem permissão) vai para a primeira área permitida.
@@ -104,17 +142,35 @@ export default function AdminApp({ tab }) {
 
   const groups = [...new Set(allowed.map((item) => item.group))];
   const initials = user.name.split(' ').map((part) => part[0]).slice(0, 2).join('').toUpperCase();
+  const syncLabel = offline ? 'Sem conexão' : live ? 'Tempo real' : 'Sincronizado';
+  const syncClass = `sync-state ${offline ? 'is-offline offline' : live ? 'is-live' : ''}`.trim();
   return <AdminContext.Provider value={context}>
     <div className={`admin-shell ${menuOpen ? 'menu-open' : ''}`}>
       <header className="admin-topbar">
         <button type="button" className="icon-btn" onClick={() => setMenuOpen(true)} aria-label="Abrir menu" aria-expanded={menuOpen}><Menu size={20} /></button>
-        <div className="admin-topbar-title">{active && <active.icon size={18} />}<b>{active?.label || 'Painel'}</b></div>
+        <a href={paths.home} className="admin-topbar-brand" aria-label="Lá em Graças · Painel da equipe">
+          <BrandLogos size="xs" />
+        </a>
+        <div className="admin-topbar-title">
+          {active && <active.icon size={17} />}
+          <span>
+            <b>{active?.label || 'Painel'}</b>
+            <small>{offline ? 'Sem conexão' : 'Painel da equipe'}</small>
+          </span>
+        </div>
+        {offline && <span className="sync-state is-offline offline admin-topbar-sync" role="status">Sem conexão</span>}
         <span className="avatar" title={`${user.name} · ${user.roleLabel}`}>{initials}</span>
       </header>
       <div className="admin-overlay" onClick={() => setMenuOpen(false)} aria-hidden="true" />
       <aside className="admin-side" aria-label="Menu do painel">
         <div className="admin-side-head">
-          <a href={paths.home} className="admin-brand"><img src="/brand/la-em-gracas-lanches.png" alt="" /><span><b>Lá em Graças</b><small>Painel da equipe</small></span></a>
+          <a href={paths.home} className="admin-brand">
+            <BrandLogos size="xs" />
+            <span className="admin-brand-text">
+              <b>Lá em Graças</b>
+              <small>Painel da equipe</small>
+            </span>
+          </a>
           <button type="button" className="icon-btn admin-close" onClick={() => setMenuOpen(false)} aria-label="Fechar menu"><X size={18} /></button>
         </div>
         <nav>
@@ -126,7 +182,11 @@ export default function AdminApp({ tab }) {
         </nav>
         <div className="admin-user">
           <span className="avatar">{initials}</span>
-          <div><b>{user.name}</b><small>{user.roleLabel}</small><span className="sync-state">{live ? 'Tempo real' : 'Sincronizado'}</span></div>
+          <div>
+            <b>{user.name}</b>
+            <small>{user.roleLabel}</small>
+            <span className={syncClass} role="status" aria-live="polite">{syncLabel}</span>
+          </div>
           <button type="button" className="icon-btn" onClick={logout} title="Sair" aria-label="Sair"><LogOut size={16} /></button>
         </div>
       </aside>
