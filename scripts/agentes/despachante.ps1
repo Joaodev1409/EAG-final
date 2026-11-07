@@ -282,8 +282,9 @@ $lista
 
   $txt = $r.Saida
   $i = $txt.IndexOf("["); $f = $txt.LastIndexOf("]")
+  # O ForEach-Object abaixo desmonta o array: no PS 5.1 o ConvertFrom-Json entrega o array inteiro como um item só.
   if ($i -lt 0 -or $f -le $i) { Log "Planejador não devolveu JSON. Saída em $($r.Log)" "ERRO"; return }
-  try { $tasks = @($txt.Substring($i, $f - $i + 1) | ConvertFrom-Json) } catch { Log "JSON inválido do planejador: $_" "ERRO"; return }
+  try { $tasks = @($txt.Substring($i, $f - $i + 1) | ConvertFrom-Json | ForEach-Object { $_ }) } catch { Log "JSON inválido do planejador: $_" "ERRO"; return }
 
   $criadas = 0
   foreach ($t in $tasks) {
