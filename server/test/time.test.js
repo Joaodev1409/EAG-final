@@ -40,11 +40,18 @@ test('readPeriod: mês inexistente lança HttpError 400', () => {
   assert.throws(() => readPeriod({ from: '2026-03-01', to: '2026-13-01' }), erro400);
 });
 
-// BUG em time.js: readPeriod valida com Date.parse, e o V8 aceita dia 30/31 em
-// qualquer mês (2026-02-30 vira 2026-03-02), então não lança. Marcado como todo
-// para não quebrar a suíte; corrigir em time.js (fora do escopo desta task).
-test('readPeriod: dia inexistente (2026-02-30) lança HttpError 400', { todo: 'bug: Date.parse aceita 2026-02-30' }, () => {
+test('readPeriod: dia inexistente (2026-02-30) lança HttpError 400', () => {
   assert.throws(() => readPeriod({ from: '2026-02-30' }), erro400);
+});
+
+test('readPeriod: dia inexistente em mês de 30 dias e ano não bissexto lança HttpError 400', () => {
+  assert.throws(() => readPeriod({ from: '2026-04-31' }), erro400);
+  assert.throws(() => readPeriod({ from: '2025-02-29' }), erro400);
+  assert.throws(() => readPeriod({ from: '2026-03-01', to: '2026-04-31' }), erro400);
+});
+
+test('readPeriod: 29/02 de ano bissexto é aceito', () => {
+  assert.deepEqual(readPeriod({ from: '2028-02-29' }), { from: '2028-02-29', to: '2028-02-29' });
 });
 
 test('readPeriod: from > to lança HttpError 400', () => {
