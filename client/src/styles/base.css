@@ -1,11 +1,19 @@
-/* Base visual. Cor principal: vermelho do cardápio "Lá em Graças Lanches"; demais cores apenas para estados. */
+/* Base visual. Cor principal: azul da marca "Lá em Graças Lanches"; vermelho exclusivo para perigo, atraso e erro. */
 :root {
-  --primary: #d6202b;
-  --primary-700: #b01821;
-  --primary-50: #fdeeef;
+  --brand-sky: #029ad6;
+  --brand-sky-700: #0172a0;
+  --brand-gold: #fcb913;
+  --brand-navy: #005180;
+  --brand-cream: #f8d880;
+  --primary: var(--brand-sky-700);
+  --primary-700: var(--brand-navy);
+  --primary-50: #e6f6fc;
+  --danger: #d6202b;
+  --danger-700: #b01821;
+  --danger-50: #fdeeef;
   --blue: #0b7fb5;
   --blue-50: #e8f4fa;
-  --green: #12804a;
+  --green: #0e6b3d;
   --green-50: #e7f5ed;
   --amber: #a15c00;
   --amber-50: #fff5e1;
@@ -13,7 +21,7 @@
   --purple-50: #f2edfc;
   --ink: #1d1d1f;
   --ink-2: #3f4247;
-  --muted: #71757c;
+  --muted: #5c6066;
   --line: #e7e7e9;
   --line-strong: #d4d5d8;
   --bg: #f7f7f8;
@@ -64,17 +72,17 @@ p { margin: 0 0 .6em; }
 .btn-primary:hover:not(:disabled) { background: var(--primary-700); }
 .btn-success { background: var(--green); color: #fff; }
 .btn-success:hover:not(:disabled) { filter: brightness(.92); }
-.btn-danger { background: var(--primary); color: #fff; }
-.btn-danger:hover:not(:disabled) { background: var(--primary-700); }
-.btn-danger-outline { background: #fff; color: var(--primary-700); border-color: #f1c4c7; }
-.btn-danger-outline:hover { background: var(--primary-50); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover:not(:disabled) { background: var(--danger-700); }
+.btn-danger-outline { background: #fff; color: var(--danger-700); border-color: #f1c4c7; }
+.btn-danger-outline:hover { background: var(--danger-50); }
 .btn-outline { background: #fff; color: var(--ink); border-color: var(--line-strong); }
 .btn-outline:hover:not(:disabled) { background: var(--surface-2); }
 .btn-ghost { background: transparent; color: var(--ink-2); }
 .btn-ghost:hover:not(:disabled) { background: var(--surface-2); }
 .icon-btn { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: #fff; color: var(--ink-2); flex: none; }
 .icon-btn:hover:not(:disabled) { background: var(--surface-2); }
-.icon-btn.danger:hover:not(:disabled) { color: var(--primary); border-color: #f1c4c7; }
+.icon-btn.danger:hover:not(:disabled) { color: var(--danger); border-color: #f1c4c7; }
 .link-btn { border: 0; background: none; padding: 0; color: var(--blue); font-weight: 600; }
 .link-btn:hover { text-decoration: underline; }
 
@@ -87,8 +95,8 @@ p { margin: 0 0 .6em; }
 .field textarea { resize: vertical; min-height: 64px; }
 .field input:focus, .field select:focus, .field textarea:focus, .filters-bar select:focus, .inline-form input:focus, .pay-line select:focus, .money-input:focus-within,
 .options-table input:focus, .movement-form input:focus, .search-field:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(11, 127, 181, .14); }
-.field.has-error input, .field.has-error select, .field.has-error textarea { border-color: var(--primary); }
-.field-error { color: var(--primary-700); font-size: 12.5px; font-weight: 600; display: block; }
+.field.has-error input, .field.has-error select, .field.has-error textarea { border-color: var(--danger); }
+.field-error { color: var(--danger-700); font-size: 12.5px; font-weight: 600; display: block; }
 .hint { color: var(--muted); font-size: 12px; }
 .money-input { display: flex; align-items: center; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: #fff; min-height: 40px; overflow: hidden; }
 .money-input span { padding: 0 2px 0 11px; color: var(--muted); font-size: 13px; }
@@ -125,7 +133,7 @@ p { margin: 0 0 .6em; }
 .badge-neutral { background: #f0f0f2; color: #4b4f56; }
 .badge-success { background: var(--green-50); color: var(--green); }
 .badge-warning { background: var(--amber-50); color: var(--amber); }
-.badge-danger { background: var(--primary-50); color: var(--primary-700); }
+.badge-danger { background: var(--danger-50); color: var(--danger-700); }
 .badge-info, .badge-blue { background: var(--blue-50); color: var(--blue); }
 .badge-purple { background: var(--purple-50); color: var(--purple); }
 
@@ -135,7 +143,7 @@ p { margin: 0 0 .6em; }
 .alert-info { background: var(--blue-50); color: #0b4a69; border-color: #cde6f2; }
 .alert-success { background: var(--green-50); color: #0c5f37; border-color: #cbe8d7; }
 .alert-warning { background: var(--amber-50); color: #7a4500; border-color: #f4dfb2; }
-.alert-error { background: var(--primary-50); color: var(--primary-700); border-color: #f4cdd0; }
+.alert-error { background: var(--danger-50); color: var(--danger-700); border-color: #f4cdd0; }
 
 /* ---------- Estados ---------- */
 .spinner-wrap { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 56px 16px; color: var(--muted); }
@@ -169,7 +177,7 @@ p { margin: 0 0 .6em; }
 .toast button { border: 0; background: none; color: inherit; opacity: .7; padding: 2px; }
 .toast-success svg:first-child { color: #5fd38f; }
 .toast-info svg:first-child { color: #7cc7ea; }
-.toast-error { background: var(--primary-700); }
+.toast-error { background: var(--danger-700); }
 
 /* ---------- Tabelas ---------- */
 .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
