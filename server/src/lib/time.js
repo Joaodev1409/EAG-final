@@ -10,12 +10,19 @@ export function localDate(date = new Date()) {
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+// Confere o formato e se o dia existe no calendário (Date.parse aceita 2026-02-30).
+function isRealDate(value) {
+  if (!DATE_RE.test(value)) return false;
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
 // Lê ?from=AAAA-MM-DD&to=AAAA-MM-DD (padrão: hoje no fuso da operação).
 export function readPeriod(query) {
   const today = localDate();
   const from = query.from ? String(query.from) : today;
   const to = query.to ? String(query.to) : from;
-  if (!DATE_RE.test(from) || !DATE_RE.test(to) || Number.isNaN(Date.parse(from)) || Number.isNaN(Date.parse(to))) {
+  if (!isRealDate(from) || !isRealDate(to)) {
     throw new HttpError(400, 'Período inválido.');
   }
   if (from > to) throw new HttpError(400, 'A data inicial deve ser anterior à final.');
