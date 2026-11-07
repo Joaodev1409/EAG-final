@@ -83,13 +83,13 @@ function Invoke-Processo([string]$Exe, [string[]]$Argumentos, [string]$Dir, [dou
 }
 
 function Git([string]$Dir, [string[]]$Argumentos) {
-  $r = & git -C $Dir @Argumentos 2>&1 | ForEach-Object { "$_" }
+  $r = & (Get-Exe "git") -C $Dir @Argumentos 2>&1 | ForEach-Object { "$_" }
   $script:GitCodigo = $LASTEXITCODE
   return ($r -join "`n")
 }
 
 function Gh([string[]]$Argumentos, [switch]$Json) {
-  $r = & gh @Argumentos 2>&1 | ForEach-Object { "$_" }
+  $r = & (Get-Exe "gh") @Argumentos 2>&1 | ForEach-Object { "$_" }
   $codigo = $LASTEXITCODE
   $texto = ($r -join "`n")
   if ($codigo -ne 0) { throw "gh $($Argumentos -join ' ') falhou ($codigo): $texto" }
@@ -184,11 +184,16 @@ function Preparar-Labels {
 
 # ---------------------------------------------------------------- execução dos agentes
 
+# Resolve o executável de verdade. "& git" dentro da função Git chamaria a própria função
+# (o PowerShell não diferencia maiúsculas), por isso as chamadas usam este caminho.
+$script:CacheExe = @{}
 function Get-Exe([string]$Nome) {
+  if ($script:CacheExe.ContainsKey($Nome)) { return $script:CacheExe[$Nome] }
   foreach ($n in @("$Nome.exe", "$Nome.cmd", $Nome)) {
     $c = Get-Command $n -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($c) { return $c.Source }
+    if ($c) { $script:CacheExe[$Nome] = $c.Source; return $c.Source }
   }
+  if ($Nome -eq "gh" -and (Test-Path "C:\Program Files\GitHub CLI\gh.exe")) { $script:CacheExe[$Nome] = "C:\Program Files\GitHub CLI\gh.exe"; return $script:CacheExe[$Nome] }
   throw "Não achei o executável '$Nome' no PATH."
 }
 
@@ -548,7 +553,7 @@ function Show-Status {
 
 function Main {
   $aqui = Split-Path -Parent $PSCommandPath
-  $script:Raiz = (& git -C $aqui rev-parse --show-toplevel).Trim().Replace('/', '\')
+  $script:Raiz = (& (Get-Exe "git") -C $aqui rev-parse --show-toplevel).Trim().Replace('/', '\')
   if (-not $Config) { $Config = Join-Path $aqui "config.json" }
   $script:Cfg = [IO.File]::ReadAllText($Config, [Text.Encoding]::UTF8) | ConvertFrom-Json
   $script:DirEstado = Join-Path $script:Raiz ".agentes"
