@@ -496,7 +496,7 @@ $($issue.body)
     Log "PR aberto para #${n}: $url" "OK"
 
     # 3. Revisão cruzada pelo outro agente (só leitura).
-    if ($pr) { Invoke-Revisao $Agente $dir $branch $pr $n $base }
+    if ($pr) { Invoke-Revisao $Agente $dir $branch $pr $n $base $issue.title $issue.body }
   }
   catch {
     Log "Erro na issue #${n}: $_" "ERRO"
@@ -510,7 +510,7 @@ $($issue.body)
   }
 }
 
-function Invoke-Revisao([string]$Autor, [string]$DirAutor, [string]$Branch, [string]$Pr, [int]$Issue, [string]$Base) {
+function Invoke-Revisao([string]$Autor, [string]$DirAutor, [string]$Branch, [string]$Pr, [int]$Issue, [string]$Base, [string]$TituloIssue = "", [string]$CorpoIssue = "") {
   $cfg = $script:Cfg
   $revisor = @($cfg.agentes.PSObject.Properties.Name | Where-Object { $_ -ne $Autor })[0]
   if (-not $revisor) { return }
@@ -524,9 +524,11 @@ Voce e o agente "$revisor" fazendo revisao cruzada do PR #$Pr (issue #$Issue), f
 NAO edite nenhum arquivo e nao rode comandos que alterem algo.
 
 O diff completo esta em $arqDiff. O codigo da branch esta em $DirAutor (so leitura).
-Revise seguindo o AGENTS.md: aponte bugs, quebra de regra (caminhos, migracoes, regras financeiras do README), mudanca de comportamento nao pedida e falta de teste.
+A task pedida e a issue #$Issue, copiada no fim deste arquivo: ela substitui a busca no TASKS.md. Confira se o diff cumpre o "Pronto quando" e se ficou so nos "Caminhos permitidos".
+Revise seguindo o AGENTS.md: aponte bugs, quebra de regra (caminhos, migracoes, regras financeiras do README), mudanca de comportamento nao pedida, item do "Pronto quando" nao atendido e falta de teste.
 Responda em portugues, em Markdown, com: veredito (aprovar / pedir mudancas), lista de problemas com arquivo e linha, e sugestoes opcionais. Seja objetivo.
 "@
+  if ($CorpoIssue) { $prompt += "`n`n## Issue #${Issue}: $TituloIssue`n`n$CorpoIssue`n" }
   $arq = Join-Path $script:DirPrompts "$rot.md"
   Write-Utf8 $arq $prompt
   $antes = Git $dirRev @("status", "--porcelain")
