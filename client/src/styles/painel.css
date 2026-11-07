@@ -36,14 +36,14 @@
 .painel-col.ready li { background: #0f2a1a; border-color: #166534; }
 .painel-col.ready li b { font-size: 4.6em; color: #fff; }
 .painel-col.ready li span { color: #bbf7d0; font-size: 1.3em; }
-.painel-col.ready li.fresh { animation: painel-blink 1s ease-in-out 6; border-color: #4ade80; }
+.painel-col.ready li.fresh { animation: painel-blink 1s var(--ease-out) 6; border-color: #4ade80; }
 @keyframes painel-blink { 50% { background: var(--painel-ready); } }
 .painel-empty { color: var(--painel-muted); font-size: 1.2em; }
 
 .painel-call {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2;
   background: var(--painel-ready); color: #fff; border-radius: 28px; padding: 2.4vw 4vw; text-align: center;
-  display: grid; justify-items: center; gap: .2em; box-shadow: 0 30px 80px rgba(0, 0, 0, .6); animation: painel-pop .35s ease-out;
+  display: grid; justify-items: center; gap: .2em; box-shadow: 0 30px 80px rgba(0, 0, 0, .6); animation: painel-pop var(--dur-3) var(--ease-out);
 }
 .painel-call span { font-size: 2em; font-weight: 600; opacity: .9; }
 .painel-call b { font-size: 9em; line-height: 1; font-weight: 800; }
