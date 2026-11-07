@@ -204,19 +204,25 @@ function New-ConfigClaude([string]$Modo, [string[]]$Caminhos, [string]$Rotulo) {
     "Bash(git push:*)", "Bash(git merge:*)", "Bash(git rebase:*)", "Bash(git reset:*)", "Bash(git checkout:*)",
     "Bash(git switch:*)", "Bash(git commit:*)", "Bash(npm run importar:*)", "Bash(npm run lancar-nuvem:*)",
     "Bash(npm run dev:*)", "Bash(npm run local:*)", "Bash(gh:*)", "Bash(curl:*)", "WebFetch", "WebSearch",
+    "PowerShell(git push:*)", "PowerShell(git merge:*)", "PowerShell(git rebase:*)", "PowerShell(git reset:*)",
+    "PowerShell(git checkout:*)", "PowerShell(git switch:*)", "PowerShell(git commit:*)", "PowerShell(npm run importar:*)",
+    "PowerShell(npm run lancar-nuvem:*)", "PowerShell(npm run dev:*)", "PowerShell(npm run local:*)", "PowerShell(gh:*)",
     "Read(**/.env)", "Read(**/.env.*)", "Edit(**/.env)", "Edit(**/.env.*)", "Edit(TASKS.md)", "Edit(AGENTS.md)",
     "Edit(CLAUDE.md)", "Edit(scripts/agentes/**)", "Edit(.dados-local/**)", "Edit(.dados-teste/**)", "Edit(.evento/**)"
   )
   $allow = @("Read", "Glob", "Grep")
   if ($Modo -eq "tarefa") {
     $allow += @("Bash(npm run build)", "Bash(npm test)", "Bash(npm test --prefix server)", "Bash(npm test --prefix server:*)",
-                "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "TodoWrite")
+                "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "TodoWrite",
+                # No Windows o Claude roda comandos pela ferramenta PowerShell; as regras Bash(...) não valem para ela.
+                "PowerShell(npm run build)", "PowerShell(npm test)", "PowerShell(npm test --prefix server)",
+                "PowerShell(npm test --prefix server:*)", "PowerShell(git status:*)", "PowerShell(git diff:*)", "PowerShell(git log:*)")
     foreach ($c in $Caminhos) {
       $g = $c.Trim().Trim('`').Replace('\', '/'); if ($g.EndsWith("/")) { $g += "**" }
       $allow += "Edit($g)"
     }
   } else {
-    $deny += @("Edit", "Write", "NotebookEdit", "Bash")
+    $deny += @("Edit", "Write", "NotebookEdit", "Bash", "PowerShell")
   }
   $cfg = @{ permissions = @{ allow = $allow; deny = $deny; defaultMode = "dontAsk" } }
   $arq = Join-Path $script:DirPrompts "$Rotulo.settings.json"

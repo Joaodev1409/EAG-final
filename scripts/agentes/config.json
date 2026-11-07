@@ -33,7 +33,7 @@
       "cli": "agy",
       "modelo": "",
       "argsTarefa": ["--mode", "accept-edits", "--sandbox"],
-      "argsRevisao": ["--mode", "plan", "--sandbox"]
+      "argsRevisao": ["--sandbox", "--print-timeout", "14m"]
     }
   },
   "labels": {
