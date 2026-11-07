@@ -243,6 +243,14 @@ function Invoke-Agente([string]$Agente, [string]$Modo, [string]$ArqPrompt, [stri
   } else {
     $extra = if ($Modo -eq "tarefa") { @($a.argsTarefa) } else { @($a.argsRevisao) }
     $argv = @($extra) + @("-p", $curto, "--add-dir", $script:DirPrompts)
+    # O agy só aceita regra de comando exata (ou "*", que libera tudo). Sem a regra, ele recusa
+    # o comando e encerra a execução inteira, então a lista vai num arquivo de settings.
+    if ($Modo -eq "tarefa" -and $a.comandosPermitidos) {
+      $regras = @($a.comandosPermitidos | ForEach-Object { "command($_)" })
+      $arqSettings = Join-Path $script:DirPrompts "$Rotulo.agy-settings.json"
+      Write-Utf8 $arqSettings (@{ permissions = @{ allow = $regras } } | ConvertTo-Json -Depth 4)
+      $argv += @("--settings", $arqSettings)
+    }
     foreach ($d in $DirsExtras) { $argv += @("--add-dir", $d) }
     if ($a.modelo) { $argv += @("--model", $a.modelo) }
   }
@@ -423,6 +431,11 @@ function Invoke-Tarefa([string]$Agente) {
     $caminhos = @(Get-CaminhosDaIssue $issue.body)
     if ($caminhos.Count -eq 0) { $caminhos = @($ag.caminhosPadrao); Log "Issue sem 'Caminhos permitidos'; usando $($caminhos -join ', ')." "AVISO" }
 
+    $avisoComandos = ""
+    if ($ag.comandosPermitidos) {
+      $avisoComandos = "- Comandos de terminal: SO estes, exatamente assim: " + (($ag.comandosPermitidos | ForEach-Object { [string][char]96 + $_ + [char]96 }) -join ", ") +
+        ". Qualquer outro comando (inclusive para ler arquivos, imagens ou buscar texto) e recusado e derruba a execucao inteira; para ler e buscar, use as suas ferramentas de arquivo."
+    }
     $erroAnterior = ""; $resumo = ""; $ok = $false
     for ($t = 1; $t -le [int]$cfg.maxTentativas; $t++) {
       if ((Get-Date) -ge $prazo) { $erroAnterior = "Tempo da task esgotado ($($cfg.timeoutTaskMinutos) min).`n`n$erroAnterior"; break }
@@ -435,6 +448,7 @@ Regras desta execucao (automatica, sem ninguem olhando):
 - Nao faca commit, push, merge, rebase, checkout nem troque de branch: o despachante faz isso.
 - Nao rode npm run dev, npm run local, importar nem lancar-nuvem. Nao acesse a internet.
 - Para conferir, voce pode rodar ``npm run build`` e ``npm test --prefix server``.
+$avisoComandos
 - Se precisar de arquivo fora dos caminhos, NAO mexa: explique no resumo.
 - Termine com o resumo pedido no AGENTS.md (o que mudou, arquivos tocados, como testar manualmente, riscos).
 

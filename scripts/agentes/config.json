@@ -33,7 +33,15 @@
       "cli": "agy",
       "modelo": "",
       "argsTarefa": ["--mode", "accept-edits", "--sandbox"],
-      "argsRevisao": ["--sandbox", "--print-timeout", "14m"]
+      "argsRevisao": ["--sandbox", "--print-timeout", "14m"],
+      "comandosPermitidos": [
+        "npm run build",
+        "npm test --prefix server",
+        "git status",
+        "git status --short",
+        "git diff",
+        "git diff --stat"
+      ]
     }
   },
   "labels": {
