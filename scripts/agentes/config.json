@@ -1,0 +1,48 @@
+{
+  "repo": "Joaodev1409/EAG-final",
+  "remote": "meu",
+  "branchBase": "main",
+  "intervaloMinutos": 15,
+  "limiteTasksPorDia": 4,
+  "timeoutTaskMinutos": 40,
+  "timeoutRevisaoMinutos": 15,
+  "timeoutPlanejadorMinutos": 15,
+  "maxTentativas": 2,
+  "maxPropostas": 3,
+  "orcamentoUsdPorExecucaoClaude": 5,
+  "comandosVerificacao": [
+    "npm run build",
+    "npm test --prefix server"
+  ],
+  "agentes": {
+    "claude": {
+      "label": "agente:claude",
+      "worktree": "../EAG-claude",
+      "branch": "agente/claude",
+      "area": "server/",
+      "caminhosPadrao": ["server/**"],
+      "cli": "claude",
+      "modelo": ""
+    },
+    "antigravity": {
+      "label": "agente:antigravity",
+      "worktree": "../EAG-agy",
+      "branch": "agente/antigravity",
+      "area": "client/",
+      "caminhosPadrao": ["client/**"],
+      "cli": "agy",
+      "modelo": "",
+      "argsTarefa": ["--mode", "accept-edits", "--sandbox"],
+      "argsRevisao": ["--mode", "plan", "--sandbox"]
+    }
+  },
+  "labels": {
+    "proposta":           { "cor": "c5def5", "descricao": "Sugerida pelo planejador; aguarda aprovação do João" },
+    "aprovada":           { "cor": "0e8a16", "descricao": "Aprovada; o despachante pode pegar" },
+    "em-andamento":       { "cor": "fbca04", "descricao": "Um agente está trabalhando nela" },
+    "pr-aberto":          { "cor": "1d76db", "descricao": "PR aberto, aguardando revisão e merge do João" },
+    "falhou":             { "cor": "d93f0b", "descricao": "O agente não conseguiu passar build/testes" },
+    "agente:claude":      { "cor": "d4c5f9", "descricao": "Dono: Claude Code (server/)" },
+    "agente:antigravity": { "cor": "bfdadc", "descricao": "Dono: Antigravity (client/)" }
+  }
+}

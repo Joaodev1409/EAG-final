@@ -46,7 +46,8 @@ pause
 
   Write-Host "`n== Instalando dependencias em $dir ==" -ForegroundColor Cyan
   Push-Location $dir
-  npm install; npm install --prefix server; npm install --prefix client
+  # Instala de dentro de cada pasta: "npm install --prefix X" sem pacote põe a raiz como dependência (file:..) no package.json.
+  foreach ($sub in @(".", "server", "client")) { Push-Location $sub; npm install; Pop-Location }
   Pop-Location
   Write-Host "OK: $dir  (branch $($a.branch), http://localhost:$($a.api))" -ForegroundColor Green
 }
