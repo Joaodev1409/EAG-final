@@ -7,6 +7,7 @@ import { ShopFooter, ShopHeader } from './shop/Layout.jsx';
 import Catalog from './shop/Catalog.jsx';
 import { CartPage, CheckoutPage } from './shop/Checkout.jsx';
 import Tracking, { LookupPage, MyOrders } from './shop/Tracking.jsx';
+import Painel from './shop/Painel.jsx';
 import AdminApp from './admin/AdminApp.jsx';
 
 function Shop({ route }) {
@@ -66,9 +67,13 @@ function SiteFechado() {
 
 export default function App() {
   const route = useRoute();
+  let view;
+  if (route.name === 'admin') view = <AdminApp tab={route.params.tab} />;
+  else if (route.name === 'painel') view = <Painel />;
+  else view = <SiteFechado />;
   return <ToastProvider>
     <ConfirmProvider>
-      {route.name === 'admin' ? <AdminApp tab={route.params.tab} /> : <SiteFechado />}
+      {view}
     </ConfirmProvider>
   </ToastProvider>;
 }
