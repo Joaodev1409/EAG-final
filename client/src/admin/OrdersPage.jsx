@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Download, Search } from 'lucide-react';
-import { EmptyState, ErrorState, Spinner, useToast } from '../components/ui.jsx';
+import { EmptyState, ErrorState, Senha, Spinner, useToast } from '../components/ui.jsx';
 import { dateTime, download, money } from '../lib/api.js';
 import { MODES, PAYMENT_STATUS, PRODUCTION_SHORT, PRODUCTION_STEPS, SERVICE_TYPES } from '../lib/labels.js';
 import { useAdmin, useLiveRefresh } from './context.js';
@@ -68,7 +68,7 @@ export default function OrdersPage() {
           <table className="table orders-table">
             <thead><tr><th>Senha / pedido</th><th>Cliente</th><th>Atendimento</th><th>Total</th><th>Pagamento</th><th>Etapa</th></tr></thead>
             <tbody>{orders.map((order) => <tr key={order.id} onClick={() => setOpenId(order.id)} className="clickable" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') setOpenId(order.id); }}>
-              <td><b className="ticket-inline">{order.ticket ? `#${order.ticket}` : 'Sem senha'}</b><small>{order.orderNumber} · {dateTime(order.createdAt)}</small></td>
+              <td>{order.ticket ? <Senha n={order.ticket} size="sm" /> : <span className="muted">Sem senha</span>}<small>{order.orderNumber} · {dateTime(order.createdAt)}</small></td>
               <td>{order.buyerName}<small>{order.teamName} · {MODES[order.mode]}</small></td>
               <td><ServiceBadge order={order} /></td>
               <td><b>{money(order.total)}</b>{order.balance > 0 && order.status === 'active' && <small>Em aberto {money(order.balance)}</small>}</td>

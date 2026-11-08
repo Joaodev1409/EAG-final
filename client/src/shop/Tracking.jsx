@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AlertTriangle, Bike, Check, CheckCircle2, ChefHat, Clock3, Copy, Link2, PackageCheck, ReceiptText, Store, UtensilsCrossed } from 'lucide-react';
-import { Badge, ErrorState, Spinner, useConfirm, useToast } from '../components/ui.jsx';
+import { Badge, ErrorState, Senha, Spinner, useConfirm, useToast } from '../components/ui.jsx';
 import { money, request, subscribe, time, fullDateTime } from '../lib/api.js';
 import { PAYMENT_METHODS, PAYMENT_STATUS, customerStepLabel } from '../lib/labels.js';
 import { paths } from '../lib/router.js';
@@ -171,7 +171,7 @@ export default function Tracking({ token }) {
   const ServiceIcon = order.serviceType === 'delivery' ? Bike : order.serviceType === 'dine_in' ? UtensilsCrossed : Store;
   return <main className="page page-narrow tracking-page">
     <section className="track-hero">
-      <div className="ticket">{order.ticket ? <><small>Senha</small><b>#{order.ticket}</b></> : <ReceiptText size={30} />}</div>
+      {order.ticket ? <Senha n={order.ticket} size="lg" /> : <div className="ticket"><ReceiptText size={30} /></div>}
       <div className="track-hero-info">
         <span className="eyebrow">Pedido {order.orderNumber}</span>
         <h1>{order.status === 'cancelled' ? 'Pedido cancelado' : order.status === 'expired' ? 'Prazo de pagamento encerrado' : `Obrigado, ${order.buyerName.split(' ')[0]}!`}</h1>
@@ -259,7 +259,7 @@ export function LookupPage() {
       <h2>Pedidos feitos neste aparelho</h2>
       <ul className="recent-orders">{recent.map((item) => <li key={item.token}>
         <a href={paths.tracking(item.token)}>
-          <span className="ticket-sm">{item.ticket ? `#${item.ticket}` : '—'}</span>
+          <Senha n={item.ticket} size="sm" />
           <span><b>{item.orderNumber}</b><small>{item.mode === 'snack' ? 'Lanchonete' : 'Artigos religiosos'} · {fullDateTime(item.savedAt)}</small></span>
           <b>{money(item.total)}</b>
         </a>
@@ -276,7 +276,7 @@ export function MyOrders() {
     {list.length === 0 ? <p className="alert alert-info">Nenhum pedido feito neste aparelho ainda.</p>
       : <ul className="recent-orders">{list.map((item) => <li key={item.token}>
         <a href={paths.tracking(item.token)}>
-          <span className="ticket-sm">{item.ticket ? `#${item.ticket}` : '—'}</span>
+          <Senha n={item.ticket} size="sm" />
           <span><b>{item.orderNumber}</b><small>{item.mode === 'snack' ? 'Lanchonete' : 'Artigos religiosos'} · {fullDateTime(item.savedAt)}</small></span>
           <b>{money(item.total)}</b>
         </a>

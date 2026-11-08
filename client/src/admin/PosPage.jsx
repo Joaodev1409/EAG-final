@@ -1,7 +1,7 @@
 // Venda no balcão: a equipe registra o pedido, identifica o cliente e recebe na hora, deixa no fiado ou para pagar depois.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CheckCircle2, Minus, Plus, Printer, Search, Trash2 } from 'lucide-react';
-import { ErrorState, Modal, Spinner } from '../components/ui.jsx';
+import { ErrorState, Modal, Senha, Spinner } from '../components/ui.jsx';
 import { imageUrl, money, parseMoney, request, uuid } from '../lib/api.js';
 import { printComanda } from './comanda.js';
 import { PAYMENT_METHODS, SERVICE_TYPES } from '../lib/labels.js';
@@ -239,7 +239,8 @@ export default function PosPage() {
       <button type="button" className="btn btn-primary" onClick={() => setDone(null)}>Nova venda</button></>}>
       <div className="pos-done">
         <CheckCircle2 size={40} />
-        <span>Senha</span><b>#{done.ticket}</b>
+        <span>Senha</span>
+        <Senha n={done.ticket} size="xl" />
         <p>{done.orderNumber} · {money(done.total)}</p>
         {done.linked && <p className="muted small">Artigos religiosos no pedido {done.linked.orderNumber} ({money(done.linked.total)}), com a mesma senha.</p>}
         {done.payType === 'pay' && done.change > 0 && <p className="change-big">Troco: <b>{money(done.change)}</b></p>}
