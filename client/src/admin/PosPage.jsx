@@ -34,6 +34,7 @@ export default function PosPage() {
   const [done, setDone] = useState(null);
   const requestId = useRef(uuid());
   const payKey = useRef(uuid());
+  const ticketRef = useRef(null);
 
   const load = useCallback(async () => {
     try {
@@ -61,6 +62,16 @@ export default function PosPage() {
 
   const products = useMemo(() => (catalog?.products || []).filter((p) => (category === 'all' || String(p.categoryId) === String(category))
     && (!search || p.name.toLowerCase().includes(search.toLowerCase()))), [catalog, category, search]);
+  const qtyByProduct = useMemo(() => {
+    const map = {};
+    for (const l of lines) map[l.productId] = (map[l.productId] || 0) + l.quantity;
+    return map;
+  }, [lines]);
+  const itemCount = useMemo(() => lines.reduce((sum, l) => sum + l.quantity, 0), [lines]);
+  const scrollToTicket = () => {
+    const reduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    ticketRef.current?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  };
 
   const addLine = (line) => setLines((current) => {
     const same = current.find((l) => l.productId === line.productId && l.note === line.note && l.customText === line.customText && JSON.stringify(l.selectedOptions) === JSON.stringify(line.selectedOptions));
@@ -151,12 +162,16 @@ export default function PosPage() {
           </div>
         </div>
         {!catalog ? <Spinner /> : products.length === 0 ? <p className="muted pad">{catalog.products.length ? 'Nenhum produto encontrado.' : 'Nenhum produto disponível neste catálogo.'}</p>
-          : <div className="pos-grid">{products.map((p) => <button type="button" key={p.id} className="pos-tile" onClick={() => quickAdd(p)}>
-            <ProductThumb product={p} size="md" /><span><b>{p.name}</b><small>{money(startingPrice(p).price)}</small></span>
-          </button>)}</div>}
+          : <div className="pos-grid">{products.map((p) => {
+            const qty = qtyByProduct[p.id] || 0;
+            return <button type="button" key={p.id} className={`pos-tile ${qty > 0 ? 'has-qty' : ''}`} onClick={() => quickAdd(p)}>
+              {qty > 0 && <span key={qty} className="pos-tile-qty" aria-label={`${qty} na comanda`}>{qty}</span>}
+              <ProductThumb product={p} size="md" /><span><b>{p.name}</b><small>{money(startingPrice(p).price)}</small></span>
+            </button>;
+          })}</div>}
       </section>
 
-      <section className="pos-ticket">
+      <section className="pos-ticket" id="pos-ticket" ref={ticketRef}>
         <h2>Pedido</h2>
         {lines.length === 0 ? <p className="muted">Toque nos produtos para adicionar.</p> : <ul className="pos-lines">
           {lines.map((l) => <li key={l.key}>
@@ -231,6 +246,11 @@ export default function PosPage() {
         <button type="button" className="btn btn-primary btn-block btn-lg" disabled={busy || !lines.length} onClick={submit}>{busy ? 'Registrando...' : `Concluir venda · ${money(totalCents / 100)}`}</button>
       </section>
     </div>
+
+    {itemCount > 0 && <button type="button" className="pos-cart-bar" onClick={scrollToTicket}>
+      <span className="pos-cart-bar-info"><b>{itemCount} {itemCount === 1 ? 'item' : 'itens'}</b> · {money(totalCents / 100)}</span>
+      <span className="pos-cart-bar-cta"><span className="pos-cart-bar-sep"> · </span>Ver pedido</span>
+    </button>}
 
     {configuring && <ProductModal product={configuring} onClose={() => setConfiguring(null)} onAdd={(line) => { addLine({ ...line, mode }); setConfiguring(null); }} />}
     {done && <Modal title="Venda registrada" onClose={() => setDone(null)} size="sm" footer={<>
