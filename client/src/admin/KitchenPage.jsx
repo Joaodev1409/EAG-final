@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AlertTriangle, ArrowRight, Bell, BellOff, Clock3, MapPin, Printer, RotateCcw, Search, Tv } from 'lucide-react';
-import { ErrorState, Senha, Spinner, useNow } from '../components/ui.jsx';
+import { AlertTriangle, ArrowRight, Bell, BellOff, CheckCircle2, ChefHat, ClipboardList, Clock3, MapPin, PackageCheck, Printer, RotateCcw, Search, Store, Tv } from 'lucide-react';
+import { EmptyState, ErrorState, Senha, SkeletonCards, useNow } from '../components/ui.jsx';
 import { elapsed, time } from '../lib/api.js';
 import { beep } from '../lib/beep.js';
 import { printComanda } from './comanda.js';
@@ -11,6 +11,7 @@ import { OrderDetail, OrderItems, PaymentBadge, PeriodFilter, ServiceBadge, prod
 
 // Momento em que o pedido entrou na etapa atual (base para o tempo de espera).
 const STAGE_SINCE = { new: 'createdAt', in_production: 'productionStartedAt', ready: 'readyAt', awaiting_pickup: 'awaitingPickupAt', finalized: 'finalizedAt' };
+const STAGE_ICONS = { new: ClipboardList, in_production: ChefHat, ready: PackageCheck, awaiting_pickup: Store, finalized: CheckCircle2 };
 // Minutos de espera para alerta (amarelo) e atraso (vermelho) em cada etapa.
 const LIMITS = { new: [5, 10], in_production: [15, 25], ready: [5, 10], awaiting_pickup: [10, 20] };
 
@@ -188,22 +189,25 @@ export default function KitchenPage() {
     {data?.staleOpen > 0 && <p className="alert alert-warning"><AlertTriangle size={17} /> Há {data.staleOpen} {data.staleOpen === 1 ? 'pedido em aberto' : 'pedidos em aberto'} de dias anteriores ao período exibido.
       <button type="button" className="btn btn-sm btn-outline" onClick={() => period.setPreset('week')}>Ver últimos 7 dias</button></p>}
 
-    {error && !data ? <ErrorState message={error} onRetry={load} /> : !data ? <Spinner /> : <>
+    {error && !data ? <ErrorState message={error} onRetry={load} /> : <>
       {error && <p className="alert alert-error">{error}</p>}
       <nav className="k-jump" aria-label="Ir para coluna">
         {PRODUCTION_STEPS.map((step) => <button type="button" key={step} onClick={() => columnsRef.current?.querySelector(`[data-step="${step}"]`)?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' })}>
-          {PRODUCTION_LABELS[step]} <b>{columns[step].length}</b></button>)}
+          {PRODUCTION_LABELS[step]} <b>{data ? columns[step].length : '–'}</b></button>)}
       </nav>
-      <div className="kanban" ref={columnsRef}>
+      <div className="kanban" ref={columnsRef} aria-busy={!data}>
         {steps.map((step) => {
           const list = step === 'finalized' && !showAllDone ? columns[step].slice(0, 20) : columns[step];
+          const StageIcon = STAGE_ICONS[step] || ChefHat;
           return <section key={step} data-step={step} className={`k-col k-col-${step} ${dragOver === step ? 'drag-over' : ''}`}
             onDragOver={(event) => { event.preventDefault(); setDragOver(step); }} onDragLeave={() => setDragOver(null)} onDrop={onDrop(step)}>
-            <header><h2>{PRODUCTION_LABELS[step]}</h2><span className="k-count">{columns[step].length}</span></header>
+            <header><h2>{PRODUCTION_LABELS[step]}</h2><span className="k-count">{data ? columns[step].length : '–'}</span></header>
             <div className="k-list">
-              {list.length === 0 ? <p className="k-empty">Nenhum pedido</p> : list.map((order) => <KitchenCard key={order.id} order={order} now={now} role={user.role}
-                requirePix={data.requirePixConfirmation} busy={busyId === order.id} onMove={move} onOpen={setOpenId} fresh={fresh.has(order.id)} />)}
-              {step === 'finalized' && columns[step].length > 20 && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowAllDone((v) => !v)}>
+              {!data ? <SkeletonCards count={3} /> : list.length === 0
+                ? <EmptyState compact className="k-empty" icon={<StageIcon size={20} />} title={step === 'finalized' ? 'Nenhum pedido finalizado ainda' : 'Nada na chapa por enquanto'} />
+                : list.map((order) => <KitchenCard key={order.id} order={order} now={now} role={user.role}
+                  requirePix={data.requirePixConfirmation} busy={busyId === order.id} onMove={move} onOpen={setOpenId} fresh={fresh.has(order.id)} />)}
+              {data && step === 'finalized' && columns[step].length > 20 && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowAllDone((v) => !v)}>
                 {showAllDone ? 'Mostrar menos' : `Mostrar todos (${columns[step].length})`}</button>}
             </div>
           </section>;

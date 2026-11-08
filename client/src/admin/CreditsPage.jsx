@@ -1,7 +1,7 @@
 // Fiados: valores anotados no nome do cliente para cobrança posterior, e histórico das baixas.
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FileText, GitMerge, HandCoins, MessageCircle, Search, Users } from 'lucide-react';
-import { EmptyState, ErrorState, Spinner } from '../components/ui.jsx';
+import { EmptyState, ErrorState, SkeletonRows } from '../components/ui.jsx';
 import { dateTime, elapsed, money } from '../lib/api.js';
 import { useAdmin, useLiveRefresh } from './context.js';
 import { OrderDetail, PaymentDialog } from './shared.jsx';
@@ -86,10 +86,10 @@ export default function CreditsPage() {
       </div>
     </header>
 
-    {tab === 'open' && data?.summary && <div className="kpi-row">
-      <div className="kpi kpi-warning"><span>Total a receber</span><b>{money(data.summary.total)}</b></div>
-      <div className="kpi"><span>Pedidos no fiado</span><b>{data.summary.count}</b></div>
-      <div className="kpi"><span>Clientes</span><b>{new Set(data.orders.map(customerKey)).size}</b></div>
+    {tab === 'open' && <div className="kpi-row">
+      <div className="kpi kpi-warning"><span>Total a receber</span><b>{data?.summary ? money(data.summary.total) : <span className="skeleton skeleton-kpi" aria-hidden="true" />}</b></div>
+      <div className="kpi"><span>Pedidos no fiado</span><b>{data?.summary ? data.summary.count : <span className="skeleton skeleton-kpi" aria-hidden="true" />}</b></div>
+      <div className="kpi"><span>Clientes</span><b>{data ? new Set(data.orders.map(customerKey)).size : <span className="skeleton skeleton-kpi" aria-hidden="true" />}</b></div>
     </div>}
 
     <div className="filters-bar">
@@ -105,8 +105,12 @@ export default function CreditsPage() {
         <GitMerge size={16} /> Nomes parecidos{suggestions.length ? ` (${suggestions.length})` : ''}</button>}
     </div>
 
-    {error ? <ErrorState message={error} onRetry={load} /> : !data ? <Spinner /> : orders.length === 0
-      ? <EmptyState title={tab === 'open' ? 'Nenhum fiado em aberto' : 'Nenhuma baixa registrada'}>{tab === 'open' ? 'Para lançar um fiado, use a Venda no balcão ou finalize um pedido sem pagamento.' : null}</EmptyState>
+    {error ? <ErrorState message={error} onRetry={load} /> : !data
+      ? <SkeletonRows count={3} showCount={false} headers={['Pedido', 'Cliente', 'Equipe', tab === 'open' ? 'Anotado em' : 'Baixa em', tab === 'open' ? 'Em aberto' : 'Valor', '']} />
+      : orders.length === 0
+      ? <EmptyState art="eag" icon={<HandCoins size={15} />} title={tab === 'open' ? 'Ninguém devendo por aqui' : 'Nenhuma baixa por enquanto'}>
+        {tab === 'open' ? 'Para lançar um fiado, use a Venda no balcão ou finalize um pedido sem pagamento.' : 'Os fiados recebidos aparecem aqui assim que você der baixa.'}
+      </EmptyState>
       : grouped === 'team' && tab === 'open'
         ? <div className="table-wrap"><table className="table">
           <thead><tr><th>Equipe</th><th>Pessoas</th><th>Comandas</th><th>Total em aberto</th><th /></tr></thead>
