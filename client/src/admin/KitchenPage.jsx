@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, ArrowRight, Bell, BellOff, Clock3, MapPin, Printer, RotateCcw, Search, Tv } from 'lucide-react';
-import { ErrorState, Spinner, useNow } from '../components/ui.jsx';
+import { ErrorState, Senha, Spinner, useNow } from '../components/ui.jsx';
 import { elapsed, time } from '../lib/api.js';
 import { beep } from '../lib/beep.js';
 import { printComanda } from './comanda.js';
@@ -35,7 +35,7 @@ function KitchenCard({ order, now, role, requirePix, busy, onMove, onOpen, fresh
     onDragStart={(event) => { event.dataTransfer.setData('text/plain', String(order.id)); event.dataTransfer.effectAllowed = 'move'; }}>
     <div role="button" tabIndex={0} className="k-card-body" onClick={() => onOpen(order.id)} onKeyDown={(event) => { if (event.key === 'Enter') onOpen(order.id); }} aria-label={`Abrir pedido ${order.ticket}`}>
       <header>
-        <b className="k-ticket">{order.ticket ? `#${order.ticket}` : order.orderNumber.slice(-6)}</b>
+        <Senha n={order.ticket ?? order.orderNumber.slice(-6)} size="md" />
         <span className="k-time"><Clock3 size={13} /> {time(order.createdAt)}</span>
         {order.productionStatus !== 'finalized' && <span className={`k-elapsed ${level}`}>{level === 'late' && <AlertTriangle size={12} />}{elapsed(since, now)}</span>}
       </header>

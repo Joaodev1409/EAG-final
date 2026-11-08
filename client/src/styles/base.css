@@ -51,7 +51,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 h1, h2, h3, h4 { margin: 0; line-height: 1.25; letter-spacing: -.01em; }
-h1, .admin-page-head h1, .site-fechado h1, .modal-head h2, .product-modal-head h2, .kpi b, .ticket b, .ticket-sm, .ticket-inline, .k-ticket, .pos-done > b, .painel-col li b, .painel-call b { font-family: var(--font-display); }
+h1, .admin-page-head h1, .site-fechado h1, .modal-head h2, .product-modal-head h2, .kpi b, .senha, .painel-col li b, .painel-call b { font-family: var(--font-display); }
 p { margin: 0 0 .6em; }
 :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
@@ -139,6 +139,37 @@ p { margin: 0 0 .6em; }
 .chip.active { background: var(--ink); border-color: var(--ink); color: #fff; }
 
 /* ---------- Badges e alertas ---------- */
+.senha {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1px;
+  background: var(--brand-gold, #fcb913);
+  color: var(--brand-navy, #005180);
+  font-family: var(--font-display, 'Baloo 2 Variable', 'Baloo 2', var(--font));
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  line-height: 1;
+  border-radius: var(--radius-sm, 8px);
+  white-space: nowrap;
+  flex: none;
+}
+.senha-hash {
+  font-style: normal;
+  font-size: .72em;
+  font-weight: 700;
+  opacity: .82;
+  line-height: 1;
+}
+.senha b {
+  font-weight: 800;
+  line-height: 1;
+}
+.senha-sm { font-size: 14px; padding: 4px 8px; border-radius: 6px; min-width: 42px; }
+.senha-md { font-size: 18px; padding: 5px 10px; border-radius: 7px; }
+.senha-lg { font-size: 28px; padding: 14px 18px; border-radius: 12px; min-width: 72px; }
+.senha-xl { font-size: 42px; padding: 12px 22px; border-radius: 14px; min-width: 104px; }
+
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; line-height: 1.6; }
 .badge-neutral { background: #f0f0f2; color: #4b4f56; }
 .badge-success { background: var(--green-50); color: var(--green); }

@@ -107,6 +107,13 @@ export function ConfirmProvider({ children }) {
 
 // ---------- Elementos simples ----------
 
+export function Senha({ n, size = 'md', className = '' }) {
+  const value = n != null && n !== '' ? String(n).replace(/^#/, '') : null;
+  return <span className={`senha senha-${size} ${className}`.trim()}>
+    {value ? <><i className="senha-hash" aria-hidden="true">#</i><b>{value}</b></> : <b>—</b>}
+  </span>;
+}
+
 export function Badge({ tone = 'neutral', children, icon }) {
   return <span className={`badge badge-${tone}`}>{icon}{children}</span>;
 }

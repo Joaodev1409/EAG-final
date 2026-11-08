@@ -72,7 +72,6 @@
 .subtabs ~ *:not(.modal-backdrop) { animation: rise var(--dur-2) var(--ease-out); }
 
 /* Tabela de pedidos */
-.ticket-inline { font-size: 15px; }
 .orders-table td:first-child { white-space: nowrap; }
 
 /* Detalhe do pedido */
@@ -124,7 +123,6 @@
 @keyframes fresh { 50% { box-shadow: 0 0 0 3px rgba(2,154,214,.35); } }
 .k-card-body { padding: 10px 12px; display: grid; gap: 6px; cursor: pointer; }
 .k-card-body header { display: flex; align-items: center; gap: 8px; }
-.k-ticket { font-size: 18px; font-weight: 800; }
 .k-time { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; color: var(--muted); }
 .k-elapsed { margin-left: auto; font-size: 12px; font-weight: 600; padding: 1px 7px; border-radius: 6px; background: var(--surface-2); display: inline-flex; align-items: center; gap: 3px; }
 .k-elapsed.warn { background: var(--amber-50); color: var(--amber); }
@@ -164,10 +162,9 @@
 .pos-totals { display: grid; gap: 4px; margin: 14px 0 0; padding: 12px; background: var(--surface-2); border-radius: var(--radius-sm); font-size: 14px; }
 .pos-totals > div { display: flex; justify-content: space-between; }
 .pos-totals .grand { font-size: 18px; font-weight: 700; }
-.pos-done { display: grid; justify-items: center; text-align: center; gap: 2px; padding: 8px 0; }
-.pos-done svg { color: var(--green); margin-bottom: 6px; }
-.pos-done span { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
-.pos-done > b { font-size: 48px; line-height: 1; }
+.pos-done { display: grid; justify-items: center; text-align: center; gap: 6px; padding: 8px 0; }
+.pos-done svg { color: var(--green); margin-bottom: 2px; }
+.pos-done > span:not(.senha) { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
 .change-big { font-size: 18px; margin-top: 8px; }
 
 /* Fiados */
@@ -339,7 +336,7 @@ body.kitchen-tv .admin-main { padding: 0; }
 .kitchen-page.is-tv .k-count { font-size: 18px; min-width: 32px; }
 .kitchen-page.is-tv .k-list { overflow-y: auto; align-content: start; gap: 10px; padding: 0 10px 12px; }
 .kitchen-page.is-tv .k-card-body { padding: 12px 14px; gap: 8px; }
-.kitchen-page.is-tv .k-ticket { font-size: 34px; line-height: 1; }
+.kitchen-page.is-tv .senha { font-size: 30px; padding: 6px 12px; border-radius: 9px; }
 .kitchen-page.is-tv .k-time, .kitchen-page.is-tv .k-elapsed { font-size: 15px; }
 .kitchen-page.is-tv .k-buyer { font-size: 18px; }
 .kitchen-page.is-tv .k-buyer span { font-size: 14px; }

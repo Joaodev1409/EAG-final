@@ -165,9 +165,7 @@
 /* Acompanhamento */
 .tracking-page { display: grid; gap: 16px; }
 .track-hero { display: flex; align-items: center; gap: 16px; border: 1px solid var(--line); border-radius: 12px; padding: 18px; position: relative; background: #fff; }
-.ticket { width: 84px; height: 84px; border-radius: 12px; background: var(--ink); color: #fff; display: grid; place-items: center; align-content: center; flex: none; text-align: center; }
-.ticket small { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; opacity: .75; }
-.ticket b { font-size: 30px; line-height: 1.05; }
+.ticket { width: 72px; height: 72px; border-radius: 12px; background: var(--brand-gold, #fcb913); color: var(--brand-navy, #005180); display: grid; place-items: center; flex: none; }
 .track-hero-info { min-width: 0; }
 .track-hero h1 { font-size: 21px; font-weight: 700; margin: 2px 0 4px; }
 .track-hero p { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 14px; color: var(--muted); flex-wrap: wrap; }
@@ -218,11 +216,10 @@
 .lookup-recent { margin-top: 28px; }
 .lookup-recent h2 { font-size: 15px; font-weight: 700; }
 .recent-orders { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 8px; }
-.recent-orders a { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; text-decoration: none; color: var(--ink); }
+.recent-orders a { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; text-decoration: none; color: var(--ink); }
 .recent-orders a:hover { background: #fafafa; }
-.recent-orders span { display: grid; font-size: 14px; }
+.recent-orders a > span:not(.senha) { display: grid; font-size: 14px; }
 .recent-orders small { color: var(--muted); }
-.ticket-sm { background: var(--ink); color: #fff; border-radius: var(--radius-sm); text-align: center; font-weight: 700; padding: 7px 4px; }
 
 @media (max-width: 1000px) {
   .store-body { grid-template-columns: 1fr; }
