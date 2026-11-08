@@ -36,7 +36,8 @@
   --dur-2: 200ms;
   --dur-3: 320ms;
   --ease-out: cubic-bezier(.2,.8,.2,1);
-  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Baloo 2 Variable', 'Baloo 2', var(--font);
   color-scheme: light;
 }
 
@@ -50,6 +51,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 h1, h2, h3, h4 { margin: 0; line-height: 1.25; letter-spacing: -.01em; }
+h1, .admin-page-head h1, .site-fechado h1, .modal-head h2, .product-modal-head h2, .kpi b, .ticket b, .ticket-sm, .ticket-inline, .k-ticket, .pos-done > b, .painel-col li b, .painel-call b { font-family: var(--font-display); }
 p { margin: 0 0 .6em; }
 :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
