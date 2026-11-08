@@ -122,9 +122,69 @@ export function Spinner({ label = 'Carregando...' }) {
   return <div className="spinner-wrap"><Loader2 className="spin" size={22} /><span>{label}</span></div>;
 }
 
-export function EmptyState({ icon, title, children, action }) {
-  return <div className="empty-state">
-    {icon && <div className="empty-icon">{icon}</div>}
+export function SkeletonCards({ count = 3 }) {
+  return <div className="skeleton-cards" role="status" aria-live="polite" aria-busy="true" aria-label="Carregando pedidos...">
+    {Array.from({ length: count }, (_, i) => <article key={i} className="k-card skeleton-card" aria-hidden="true">
+      <div className="k-card-body">
+        <header>
+          <span className="skeleton skeleton-senha" />
+          <span className="skeleton skeleton-time" />
+          <span className="skeleton skeleton-elapsed" />
+        </header>
+        <div className="k-buyer">
+          <span className="skeleton skeleton-buyer" />
+          <span className="skeleton skeleton-team" />
+        </div>
+        <div className="k-badges">
+          <span className="skeleton skeleton-badge" />
+          <span className="skeleton skeleton-badge-sm" />
+        </div>
+        <div className="skeleton-items">
+          <span className="skeleton skeleton-item-1" />
+          <span className="skeleton skeleton-item-2" />
+        </div>
+      </div>
+      <footer>
+        <span className="skeleton skeleton-btn-icon" />
+        <span className="skeleton skeleton-btn-main" />
+      </footer>
+    </article>)}
+  </div>;
+}
+
+export function SkeletonRows({ count = 3, showCount = true, headers = ['Senha / pedido', 'Cliente', 'Atendimento', 'Total', 'Pagamento', 'Etapa'] }) {
+  return <div className="skeleton-table-block" role="status" aria-live="polite" aria-busy="true" aria-label="Carregando lista...">
+    {showCount && <p className="muted small" aria-hidden="true"><span className="skeleton skeleton-count" /></p>}
+    <div className="table-wrap">
+      <table className="table orders-table">
+        <thead><tr>{headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
+        <tbody>
+          {Array.from({ length: count }, (_, i) => <tr key={i} className="skeleton-row" aria-hidden="true">
+            <td><span className="skeleton skeleton-pill" /><small><span className="skeleton skeleton-sub" /></small></td>
+            <td><span className="skeleton skeleton-title" /><small><span className="skeleton skeleton-sub-short" /></small></td>
+            <td><span className="skeleton skeleton-badge" /></td>
+            <td><span className="skeleton skeleton-value" /></td>
+            <td><span className="skeleton skeleton-badge" /></td>
+            {headers.length >= 6 && <td><span className="skeleton skeleton-badge-sm" /></td>}
+          </tr>)}
+        </tbody>
+      </table>
+    </div>
+  </div>;
+}
+
+export function EmptyState({ icon, art, title, children, action, compact = false, tone = 'gold', className = '' }) {
+  const logoSrc = art === 'eag' || art === 'logo' || (!art && !icon)
+    ? '/brand/eag-gracas.png'
+    : art === 'snack'
+      ? '/brand/la-em-gracas-lanches.png'
+      : null;
+  const customArt = !logoSrc && art ? art : null;
+  return <div className={`empty-state ${compact ? 'empty-state-compact' : ''} ${tone === 'danger' ? 'empty-state-danger' : ''} ${className}`.trim()}>
+    {(logoSrc || customArt || icon) && <div className={`empty-icon empty-icon-${tone} ${logoSrc ? 'has-logo' : ''}`.trim()} aria-hidden="true">
+      {logoSrc ? <img src={logoSrc} alt="" className="empty-logo" /> : (customArt || icon)}
+      {logoSrc && icon && <span className="empty-badge">{icon}</span>}
+    </div>}
     <h3>{title}</h3>
     {children && <p>{children}</p>}
     {action}
@@ -132,7 +192,7 @@ export function EmptyState({ icon, title, children, action }) {
 }
 
 export function ErrorState({ message, onRetry }) {
-  return <EmptyState icon={<AlertTriangle size={26} />} title="Não foi possível carregar"
+  return <EmptyState tone="danger" icon={<AlertTriangle size={26} />} title="Não foi possível carregar"
     action={onRetry && <button type="button" className="btn btn-outline" onClick={onRetry}>Tentar novamente</button>}>{message}</EmptyState>;
 }
 

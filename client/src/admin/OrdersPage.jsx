@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Download, Search } from 'lucide-react';
-import { EmptyState, ErrorState, Senha, Spinner, useToast } from '../components/ui.jsx';
+import { ClipboardList, Download, Search } from 'lucide-react';
+import { EmptyState, ErrorState, Senha, SkeletonRows, useToast } from '../components/ui.jsx';
 import { dateTime, download, money } from '../lib/api.js';
 import { MODES, PAYMENT_STATUS, PRODUCTION_SHORT, PRODUCTION_STEPS, SERVICE_TYPES } from '../lib/labels.js';
 import { useAdmin, useLiveRefresh } from './context.js';
@@ -42,13 +42,13 @@ export default function OrdersPage() {
       {can('finance.view') && <button type="button" className="btn btn-outline btn-sm" onClick={exportCsv}><Download size={15} /> Exportar CSV</button>}
     </header>
 
-    {summary && <div className="kpi-row">
-      <div className="kpi"><span>Pedidos hoje</span><b>{summary.today}</b></div>
-      <div className="kpi"><span>Novos (aguardando cozinha)</span><b>{summary.new_orders}</b></div>
-      <div className="kpi"><span>Em produção</span><b>{summary.in_production}</b></div>
-      <div className="kpi"><span>Prontos / aguardando retirada</span><b>{summary.ready}</b></div>
-      <div className="kpi kpi-info"><span>PIX para conferir</span><b>{summary.pending_review}</b></div>
-    </div>}
+    <div className="kpi-row">
+      <div className="kpi"><span>Pedidos hoje</span><b>{summary ? summary.today : <span className="skeleton skeleton-kpi" aria-hidden="true" />}</b></div>
+      <div className="kpi"><span>Novos (aguardando cozinha)</span><b>{summary ? summary.new_orders : <span className="skeleton skeleton-kpi" aria-hidden="true" />}</b></div>
+      <div className="kpi"><span>Em produção</span><b>{summary ? summary.in_production : <span className="skeleton skeleton-kpi" aria-hidden="true" />}</b></div>
+      <div className="kpi"><span>Prontos / aguardando retirada</span><b>{summary ? summary.ready : <span className="skeleton skeleton-kpi" aria-hidden="true" />}</b></div>
+      <div className="kpi kpi-info"><span>PIX para conferir</span><b>{summary ? summary.pending_review : <span className="skeleton skeleton-kpi" aria-hidden="true" />}</b></div>
+    </div>
 
     <div className="filters-bar">
       <PeriodFilter period={period} />
@@ -60,8 +60,8 @@ export default function OrdersPage() {
       <select value={filters.status} onChange={set('status')} aria-label="Situação"><option value="">Toda situação</option><option value="active">Ativos</option><option value="cancelled">Cancelados</option><option value="expired">Expirados</option></select>
     </div>
 
-    {error ? <ErrorState message={error} onRetry={load} /> : !orders ? <Spinner /> : orders.length === 0
-      ? <EmptyState title="Nenhum pedido encontrado">Ajuste o período ou os filtros.</EmptyState>
+    {error ? <ErrorState message={error} onRetry={load} /> : !orders ? <SkeletonRows count={3} /> : orders.length === 0
+      ? <EmptyState art="eag" icon={<ClipboardList size={15} />} title="Nenhum pedido neste período">Ajuste o período ou os filtros para encontrar outros pedidos.</EmptyState>
       : <>
         <p className="muted small">{orders.length} {orders.length === 1 ? 'pedido' : 'pedidos'}{orders.length >= 500 ? ' (mostrando os 500 mais recentes)' : ''}</p>
         <div className="table-wrap">
