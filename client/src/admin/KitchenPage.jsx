@@ -204,7 +204,7 @@ export default function KitchenPage() {
             <header><h2>{PRODUCTION_LABELS[step]}</h2><span className="k-count">{data ? columns[step].length : '–'}</span></header>
             <div className="k-list">
               {!data ? <SkeletonCards count={3} /> : list.length === 0
-                ? <EmptyState compact className="k-empty" icon={<StageIcon size={20} />} title="Nada na chapa por enquanto" />
+                ? <EmptyState compact className="k-empty" icon={<StageIcon size={20} />} title={step === 'finalized' ? 'Nenhum pedido finalizado ainda' : 'Nada na chapa por enquanto'} />
                 : list.map((order) => <KitchenCard key={order.id} order={order} now={now} role={user.role}
                   requirePix={data.requirePixConfirmation} busy={busyId === order.id} onMove={move} onOpen={setOpenId} fresh={fresh.has(order.id)} />)}
               {data && step === 'finalized' && columns[step].length > 20 && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowAllDone((v) => !v)}>

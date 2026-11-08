@@ -174,7 +174,7 @@ export function SkeletonRows({ count = 3, showCount = true, headers = ['Senha / 
 }
 
 export function EmptyState({ icon, art, title, children, action, compact = false, tone = 'gold', className = '' }) {
-  const logoSrc = art === 'eag' || art === 'logo' || (!art && !icon)
+  const logoSrc = art === 'eag' || art === 'logo'
     ? '/brand/eag-gracas.png'
     : art === 'snack'
       ? '/brand/la-em-gracas-lanches.png'
